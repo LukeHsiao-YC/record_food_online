@@ -392,9 +392,33 @@
       const [macroTargets, setMacroTargets] = useState({ carbMax: 65, proMin: 20, proMax: 45, fibMin: 6 });
       const [searchTerm, setSearchTerm] = useState('');
       
+      // 內建的預設備用資料庫 (根據醫師提供最新營養標示更新，並用淨重推估纖維量)
+      const DEFAULT_SIDES = [
+        // 蛋白質區
+        { id: 'ds1', name: '茶葉蛋', cal: 75, pro: 7, fib: 0, sod: 250, carb: 5, price: 13, type: 'protein' },
+        { id: 'ds2', name: '統一無糖高纖豆漿', cal: 162, pro: 13.6, fib: 8, sod: 88, carb: 14, price: 20, type: 'protein' },
+        { id: 'ds3', name: '舒迷雞胸肉', cal: 136, pro: 24.5, fib: 0, sod: 679, carb: 1, price: 59, type: 'protein' },
+        { id: 'ds4', name: '統一AB無糖優酪乳', cal: 119, pro: 6.4, fib: 0, sod: 107, carb: 17.3, price: 28, type: 'protein' },
+        { id: 'ds5', name: '石安牧場溫泉蛋', cal: 53, pro: 5.4, fib: 0, sod: 204, carb: 1.4, price: 46, type: 'protein' },
+        
+        // 纖維區 (以 100g 蔬菜 ≈ 2g 纖維 進行推估，解決廠商未標示問題)
+        { id: 'df1', name: '一日野菜-和風海藻', cal: 37, pro: 1.4, fib: 2.6, sod: 101, carb: 6, price: 49, type: 'fiber' }, // 淨重 130g
+        { id: 'df2', name: '一日野菜-活力彩蔬', cal: 98, pro: 8.6, fib: 3.5, sod: 86, carb: 14.4, price: 55, type: 'fiber' }, // 淨重 174g
+        { id: 'df3', name: '關東煮-白蘿蔔兩塊', cal: 16, pro: 0, fib: 1.0, sod: 120, carb: 0, price: 20, type: 'fiber' }, // 淨重 50g
+        { id: 'df4', name: '微波-鹽味毛豆', cal: 97, pro: 7.9, fib: 0, sod: 315, carb: 7.5, price: 39, type: 'fiber' }, 
+        { id: 'df5', name: '微波-青花菜', cal: 30, pro: 2, fib: 3, sod: 100, carb: 4, price: 39, type: 'fiber' }, // 保留經典款湊齊5樣
+        
+        // 點心/飲品區
+        { id: 'de1', name: '上等蕉 (1根)', cal: 90, pro: 1.5, fib: 2.0, sod: 0, carb: 23, price: 20, type: 'extra' },
+        { id: 'de2', name: 'CityCafe 無糖拿鐵(中)', cal: 150, pro: 8, fib: 0, sod: 100, carb: 10, price: 45, type: 'extra' },
+        { id: 'de3', name: '切片蘋果', cal: 55, pro: 0.2, fib: 1.8, sod: 2, carb: 14.5, price: 39, type: 'extra' },
+        { id: 'de4', name: '無加糖燕麥奶(290ml)', cal: 128, pro: 2.9, fib: 2.3, sod: 110, carb: 21, price: 35, type: 'extra' },
+        { id: 'de5', name: '統一無糖綠茶', cal: 0, pro: 0, fib: 0, sod: 10, carb: 0, price: 20, type: 'extra' },
+      ];
+
       // 雲端資料狀態
       const [mainMeals, setMainMeals] = useState([]);
-      const [sideOptions, setSideOptions] = useState([]);
+      const [sideOptions, setSideOptions] = useState(DEFAULT_SIDES); // 預設載入內建清單
       const [isLoadingData, setIsLoadingData] = useState(true);
       const [dataError, setDataError] = useState(null);
 
@@ -436,14 +460,18 @@
           
           // 根據 type 欄位分類資料
           const mains = processedData.filter(item => item.type === 'main');
-          const sides = processedData.filter(item => item.type === 'protein' || item.type === 'fiber' || item.type === 'extra');
+          let sides = processedData.filter(item => item.type === 'protein' || item.type === 'fiber' || item.type === 'extra');
           
           setMainMeals(mains);
-          setSideOptions(sides);
+
+          // 如果雲端尚未設定任何配菜，則保留內建的 15 款商品
+          if(sides.length > 0) {
+            setSideOptions(sides);
+          }
           
           // 將最新資料存入 localStorage 作為快取
           localStorage.setItem('cached_main_meals', JSON.stringify(mains));
-          localStorage.setItem('cached_side_options', JSON.stringify(sides));
+          if(sides.length > 0) localStorage.setItem('cached_side_options', JSON.stringify(sides));
           
         } catch (err) {
           console.error('Fetch error:', err);
@@ -451,9 +479,9 @@
           const cachedMains = localStorage.getItem('cached_main_meals');
           const cachedSides = localStorage.getItem('cached_side_options');
           
-          if (cachedMains && cachedSides) {
+          if (cachedMains) {
             setMainMeals(JSON.parse(cachedMains));
-            setSideOptions(JSON.parse(cachedSides));
+            if (cachedSides) setSideOptions(JSON.parse(cachedSides));
             setDataError("無法連線至雲端，目前顯示為離線快取資料。");
           } else {
             setDataError("無法載入雲端資料，且無離線快取。請檢查網路或 API 設定。");
@@ -940,6 +968,7 @@
               <div className={`p-4 rounded-3xl border transition-colors ${needProtein && !excessProtein ? 'bg-blue-50/50 border-blue-100' : 'bg-slate-50 border-slate-200'}`}>
                 <h3 className={`text-sm font-bold mb-3 flex items-center gap-1 ${needProtein && !excessProtein ? 'text-blue-800' : 'text-slate-600'}`}>💪 {needProtein && !excessProtein ? '建議補足蛋白質' : '蛋白質單點區 (已達標)'}</h3>
                 <div className="flex overflow-x-auto pb-2 gap-3 snap-x no-scrollbar">
+                  {/* 使用從 API 抓回來的 sideOptions 過濾 */}
                   {sideOptions.filter(s => s.type === 'protein').map(side => (
                     <div key={side.id} className={`snap-start flex-shrink-0 w-32 bg-white border rounded-2xl p-3 flex flex-col justify-between shadow-sm ${needProtein && !excessProtein ? 'border-blue-100' : 'border-slate-200'}`}>
                       <div><div className="text-xs font-bold text-slate-700 mb-1">{side.name}</div><div className={`text-[10px] font-medium ${needProtein && !excessProtein ? 'text-blue-500' : 'text-slate-400'}`}>+{side.pro}g 蛋白</div></div>
