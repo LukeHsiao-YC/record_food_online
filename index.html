@@ -19,6 +19,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       -webkit-tap-highlight-color: transparent; 
       touch-action: manipulation;
@@ -108,6 +111,7 @@
     const Calculator = (props) => <Icon name="calculator" {...props} />;
     const BookOpen = (props) => <Icon name="book-open" {...props} />;
     const Lightbulb = (props) => <Icon name="lightbulb" {...props} />;
+    const Sunrise = (props) => <Icon name="sunrise" {...props} />;
 
     const FacebookLogo = (props) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -154,21 +158,59 @@
     // 3. 獨立知識庫元件 (Knowledge Base Room)
     // ==========================================
     const KnowledgeBase = ({ onClose }) => {
+      // 建立各區塊的 Ref
+      const section1Ref = useRef(null);
+      const section2Ref = useRef(null);
+      const section3Ref = useRef(null);
+      const section4Ref = useRef(null);
+      const section5Ref = useRef(null); // 新增早餐模塊 Ref
+
+      // 平滑捲動函式
+      const scrollToSection = (ref) => {
+        if (ref.current) {
+          ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
       return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 animate-in slide-in-from-bottom-8">
-          {/* Header */}
-          <div className="bg-emerald-600 p-4 sticky top-0 z-20 flex items-center justify-between text-white shadow-md">
-            <button onClick={onClose} className="p-2 hover:bg-emerald-700 rounded-full transition-colors">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <h1 className="font-bold text-lg tracking-wide">外食與 211 餐盤全攻略</h1>
-            <div className="w-10"></div> {/* Spacer for centering */}
+          
+          {/* 吸頂 Header 與 快速導覽列 */}
+          <div className="sticky top-0 z-30">
+            {/* Header (強化返回按鈕) */}
+            <div className="bg-emerald-600 p-4 flex items-center justify-between text-white shadow-md relative z-20">
+              <button onClick={onClose} className="flex items-center pl-1 pr-3 py-1.5 -ml-1 hover:bg-emerald-700 rounded-xl transition-colors active:scale-95">
+                <ChevronLeft className="w-6 h-6" />
+                <span className="text-sm font-bold">返回</span>
+              </button>
+              <h1 className="font-bold text-base md:text-lg tracking-wide absolute left-1/2 -translate-x-1/2 whitespace-nowrap">211 餐盤全攻略</h1>
+              <div className="w-16"></div> {/* Spacer */}
+            </div>
+            
+            {/* 分類導覽列 */}
+            <div className="bg-white/95 backdrop-blur-md px-3 py-3 border-b border-slate-200 shadow-sm flex gap-2 overflow-x-auto no-scrollbar relative z-10">
+              <button onClick={() => scrollToSection(section1Ref)} className="flex-shrink-0 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-full transition-colors flex items-center gap-1 shadow-sm border border-blue-100">
+                🧮 營養計算
+              </button>
+              <button onClick={() => scrollToSection(section2Ref)} className="flex-shrink-0 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full transition-colors flex items-center gap-1 shadow-sm border border-emerald-100">
+                🍽️ 餐盤順序
+              </button>
+              <button onClick={() => scrollToSection(section5Ref)} className="flex-shrink-0 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-full transition-colors flex items-center gap-1 shadow-sm border border-amber-100">
+                ☕ 早餐/點心
+              </button>
+              <button onClick={() => scrollToSection(section3Ref)} className="flex-shrink-0 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full transition-colors flex items-center gap-1 shadow-sm border border-slate-200">
+                🚥 外食燈號
+              </button>
+              <button onClick={() => scrollToSection(section4Ref)} className="flex-shrink-0 px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-full transition-colors flex items-center gap-1 shadow-sm border border-purple-100">
+                💡 系統教學
+              </button>
+            </div>
           </div>
 
           <div className="p-4 space-y-6 max-w-md mx-auto mt-2">
             
             {/* Section 1: 營養素計算大解密 */}
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+            <div ref={section1Ref} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 scroll-mt-32">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
                   <Calculator className="w-5 h-5" />
@@ -199,7 +241,7 @@
             </div>
 
             {/* Section 2: 211 餐盤概念 */}
-            <div className="bg-emerald-50 p-6 rounded-3xl shadow-sm border border-emerald-100">
+            <div ref={section2Ref} className="bg-emerald-50 p-6 rounded-3xl shadow-sm border border-emerald-100 scroll-mt-32">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-emerald-200 p-2 rounded-xl text-emerald-700">
                   <PieChart className="w-5 h-5" />
@@ -220,7 +262,7 @@
                   <div className="flex-1"><div className="text-2xl mb-1">🍠</div>1份 澱粉</div>
                 </div>
                 
-                {/* 新增：手掌估算法 */}
+                {/* 手掌估算法 */}
                 <div className="mt-4 pt-4 border-t border-emerald-100 text-xs text-slate-600 leading-relaxed">
                   <p className="font-bold text-emerald-700 mb-2 flex items-center gap-1">
                     <Lightbulb className="w-4 h-4"/> 怎麼抓「1 份」的量？(手掌估算法)
@@ -248,8 +290,36 @@
               </div>
             </div>
 
+            {/* Section 5: 早餐與點心破解法 (新增模塊) */}
+            <div ref={section5Ref} className="bg-amber-50 p-6 rounded-3xl shadow-sm border border-amber-200 scroll-mt-32">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="bg-amber-200 p-2 rounded-xl text-amber-700">
+                  <Sunrise className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-amber-900">早餐與點心破解法</h2>
+              </div>
+              <p className="text-sm text-amber-800 mb-4 leading-relaxed font-medium">
+                早餐跟點心通常很難買到蔬菜，這時候不用硬湊 211，請掌握以下變通原則：
+              </p>
+
+              <div className="space-y-3">
+                <div className="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm">
+                  <h3 className="font-bold text-amber-700 mb-1 flex items-center gap-1">☕ 早餐原則：保底蛋白質</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    傳統早餐店(蔥油餅、鐵板麵)充滿劣質油脂與精緻澱粉，強烈建議避開。早餐若吃不到菜，請確保<b>「優質蛋白質」</b>一定要達標 (如：無糖豆漿 + 茶葉蛋)。澱粉請選原型 (如：地瓜)。少掉的蔬菜，在午晚餐補回來即可！
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm">
+                  <h3 className="font-bold text-amber-700 mb-1 flex items-center gap-1">🍪 點心原則：避開精緻糖</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    下午嘴饞時，請選擇不會讓血糖飆升的食物。例如：<b>無調味堅果、毛豆、茶葉蛋、無糖優格或黑巧克力</b>。如果選擇吃水果，份量請控制在一個拳頭大小內。
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Section 3: 紅綠燈選擇原則 */}
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+            <div ref={section3Ref} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 scroll-mt-32">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-slate-100 p-2 rounded-xl text-slate-600">
                   <CheckCircle2 className="w-5 h-5" />
@@ -277,7 +347,7 @@
             </div>
 
             {/* Section 4: 系統使用指南 */}
-            <div className="bg-purple-50 p-6 rounded-3xl shadow-sm border border-purple-100">
+            <div ref={section4Ref} className="bg-purple-50 p-6 rounded-3xl shadow-sm border border-purple-100 scroll-mt-32">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-purple-200 p-2 rounded-xl text-purple-700">
                   <Lightbulb className="w-5 h-5" />
@@ -298,6 +368,16 @@
                   <div><b>化身口袋營養師：</b>遇到系統沒有的商品？善用「自行輸入」，系統內建的 AI 大腦會即時診斷並為您換算蔬菜纖維量！</div>
                 </li>
               </ul>
+            </div>
+
+            {/* 底部明顯的返回確認按鈕 */}
+            <div className="mt-8 pt-2 pb-6">
+              <button 
+                onClick={onClose} 
+                className="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-slate-700 active:scale-[0.98] transition-all flex justify-center items-center gap-2"
+              >
+                <CheckCircle2 className="w-5 h-5" /> 我已經了解，返回設定頁
+              </button>
             </div>
 
           </div>
@@ -373,7 +453,7 @@
       ];
 
       return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 pb-10">
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800 pb-10">
           
           {/* 知識庫入口按鈕 */}
           <div className="w-full max-w-md mt-4 mb-2">
@@ -1027,9 +1107,12 @@
                 <button onClick={() => setCustomInputMode('main')} className="w-full bg-emerald-50 border border-emerald-200 text-emerald-700 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-emerald-100 active:bg-emerald-200 font-bold text-sm transition-colors">
                   <Edit className="w-4 h-4" /> 找不到商品？輸入主餐標示
                 </button>
-                <button onClick={() => handleSelectMain({ id: 'blank_' + Date.now(), name: '🍽️ 空白餐盤 (無主餐)', category: '自訂主餐', cal: 0, pro: 0, fib: 0, sod: 0, carb: 0, price: 0, expert: '此為空白基底，請在下方的「自行輸入區」隨意加入您買的各種食物！' })} className="w-full mt-3 bg-blue-50 border border-blue-200 text-blue-700 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-100 active:bg-blue-200 font-bold text-sm shadow-sm transition-colors">
-                  <Plus className="w-4 h-4" /> 只買小東西？從空白餐盤組合
+                
+                {/* 改變：強化空白餐盤按鈕，明確標示為早餐或點心 */}
+                <button onClick={() => handleSelectMain({ id: 'blank_' + Date.now(), name: '☀️ 早餐 / ☕ 點心 (自由組合)', category: '自訂主餐', cal: 0, pro: 0, fib: 0, sod: 0, carb: 0, price: 0, expert: '💡 早餐或點心通常較難買到蔬菜。請先確保「優質蛋白質」足夠，並避開精緻糖分，少掉的蔬菜午晚餐補回來即可！' })} className="w-full mt-3 bg-amber-50 border border-amber-200 text-amber-700 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-amber-100 active:bg-amber-200 font-bold text-sm shadow-sm transition-colors">
+                  <Sunrise className="w-4 h-4" /> 早餐 / 點心 / 輕食 (從空白餐盤組合)
                 </button>
+
                 <button onClick={() => setShowHistory(true)} className="w-full mt-3 bg-slate-800 text-white py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-700 active:bg-slate-900 font-bold text-sm shadow-md transition-colors">
                   <TrendingUp className="w-4 h-4" /> 查看本週健康成績單
                 </button>
