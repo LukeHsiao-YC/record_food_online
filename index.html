@@ -56,7 +56,7 @@
     const { useState, useEffect, useRef } = React;
 
     // ==========================================
-    // 1. API 網址設定
+    // 1. API 網址設定 (已為您填入專屬 GAS 網址)
     // ==========================================
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzAN311kTYImaJlad5w_CH6U8IGzJ1nknCDj6uuZvToczWlcCOhBmGEQNkdfabq2exi/exec"; 
 
@@ -105,6 +105,7 @@
     const HeartHandshake = (props) => <Icon name="heart-handshake" {...props} />;
     const RefreshCw = (props) => <Icon name="refresh-cw" {...props} />;
     const Zap = (props) => <Icon name="zap" {...props} />;
+    const Calculator = (props) => <Icon name="calculator" {...props} />;
 
     const FacebookLogo = (props) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -215,7 +216,7 @@
       ];
 
       return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 pb-10">
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800 pb-10">
           <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 mb-6 mt-4">
             <div className="bg-emerald-600 p-6 text-white">
               <h1 className="text-2xl font-bold flex items-center gap-2"><User className="w-6 h-6 mr-1" /> 健康選食助手設定</h1>
@@ -392,23 +393,20 @@
       const [macroTargets, setMacroTargets] = useState({ carbMax: 65, proMin: 20, proMax: 45, fibMin: 6 });
       const [searchTerm, setSearchTerm] = useState('');
       
-      // 內建的預設備用資料庫 (根據醫師提供最新營養標示更新，並用淨重推估纖維量)
+      // 內建的預設備用資料庫 (當雲端尚未建立或失敗時的 fallback)
       const DEFAULT_SIDES = [
-        // 蛋白質區
         { id: 'ds1', name: '茶葉蛋', cal: 75, pro: 7, fib: 0, sod: 250, carb: 5, price: 13, type: 'protein' },
         { id: 'ds2', name: '統一無糖高纖豆漿', cal: 162, pro: 13.6, fib: 8, sod: 88, carb: 14, price: 20, type: 'protein' },
         { id: 'ds3', name: '舒迷雞胸肉', cal: 136, pro: 24.5, fib: 0, sod: 679, carb: 1, price: 59, type: 'protein' },
         { id: 'ds4', name: '統一AB無糖優酪乳', cal: 119, pro: 6.4, fib: 0, sod: 107, carb: 17.3, price: 28, type: 'protein' },
         { id: 'ds5', name: '石安牧場溫泉蛋', cal: 53, pro: 5.4, fib: 0, sod: 204, carb: 1.4, price: 46, type: 'protein' },
         
-        // 纖維區 (以 100g 蔬菜 ≈ 2g 纖維 進行推估，解決廠商未標示問題)
-        { id: 'df1', name: '一日野菜-和風海藻', cal: 37, pro: 1.4, fib: 2.6, sod: 101, carb: 6, price: 49, type: 'fiber' }, // 淨重 130g
-        { id: 'df2', name: '一日野菜-活力彩蔬', cal: 98, pro: 8.6, fib: 3.5, sod: 86, carb: 14.4, price: 55, type: 'fiber' }, // 淨重 174g
-        { id: 'df3', name: '關東煮-白蘿蔔兩塊', cal: 16, pro: 0, fib: 1.0, sod: 120, carb: 0, price: 20, type: 'fiber' }, // 淨重 50g
+        { id: 'df1', name: '一日野菜-和風海藻', cal: 37, pro: 1.4, fib: 2.6, sod: 101, carb: 6, price: 49, type: 'fiber' },
+        { id: 'df2', name: '一日野菜-活力彩蔬', cal: 98, pro: 8.6, fib: 3.5, sod: 86, carb: 14.4, price: 55, type: 'fiber' },
+        { id: 'df3', name: '關東煮-白蘿蔔兩塊', cal: 16, pro: 0, fib: 1.0, sod: 120, carb: 0, price: 20, type: 'fiber' },
         { id: 'df4', name: '微波-鹽味毛豆', cal: 97, pro: 7.9, fib: 0, sod: 315, carb: 7.5, price: 39, type: 'fiber' }, 
-        { id: 'df5', name: '微波-青花菜', cal: 30, pro: 2, fib: 3, sod: 100, carb: 4, price: 39, type: 'fiber' }, // 保留經典款湊齊5樣
+        { id: 'df5', name: '微波-青花菜', cal: 30, pro: 2, fib: 3, sod: 100, carb: 4, price: 39, type: 'fiber' },
         
-        // 點心/飲品區
         { id: 'de1', name: '上等蕉 (1根)', cal: 90, pro: 1.5, fib: 2.0, sod: 0, carb: 23, price: 20, type: 'extra' },
         { id: 'de2', name: 'CityCafe 無糖拿鐵(中)', cal: 150, pro: 8, fib: 0, sod: 100, carb: 10, price: 45, type: 'extra' },
         { id: 'de3', name: '切片蘋果', cal: 55, pro: 0.2, fib: 1.8, sod: 2, carb: 14.5, price: 39, type: 'extra' },
@@ -436,6 +434,10 @@
       const [customInputMode, setCustomInputMode] = useState(null); 
       const [customMeal, setCustomMeal] = useState({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
       const [inlineCustom, setInlineCustom] = useState({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
+      
+      // 蔬菜重量換算狀態
+      const [vegWeight, setVegWeight] = useState('');
+      const [vegType, setVegType] = useState('raw'); // 'raw'生菜 或 'cooked'熟菜
 
       // 從 Google Apps Script 抓取資料
       const fetchFoodData = async () => {
@@ -620,17 +622,21 @@
         const c_carb = parseFloat(customMeal.carb) || 0;
         const c_pro = parseFloat(customMeal.pro) || 0;
         const c_sod = parseFloat(customMeal.sod) || 0;
+        
+        let calculatedFib = parseFloat(customMeal.fib) || 0;
+        if (vegWeight && vegWeight > 0) {
+          calculatedFib = vegType === 'raw' ? (vegWeight * 0.02) : (vegWeight * 0.04);
+        }
 
         const newMeal = {
           id: 'custom_' + Date.now(), 
           category: isMain ? '自訂主餐' : '自訂單點', 
           name: customMeal.name || '自訂美食',
           cal: parseFloat(customMeal.cal) || 0, pro: c_pro,
-          fib: parseFloat(customMeal.fib) || 0, sod: c_sod,
+          fib: calculatedFib, sod: c_sod,
           carb: c_carb, price: parseFloat(customMeal.price) || 0,
           type: isMain ? 'main' : 'extra',
-          // 手動輸入自動套用智能短評生成器
-          expert: `💡 系統智能分析：${generateSmartComment(c_carb, c_pro, c_sod, isMain)}`
+          expert: isMain ? `💡 系統智能分析：${generateSmartComment(c_carb, c_pro, c_sod, isMain)}` : ''
         };
         
         if (isMain) {
@@ -647,14 +653,21 @@
         
         setCustomInputMode(null);
         setCustomMeal({name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: ''});
+        setVegWeight('');
       };
 
       const handleInlineCustomAdd = () => {
         if (!inlineCustom.name || !inlineCustom.cal) { alert('請至少填寫「食物名稱」與「熱量」喔！'); return; }
+        
+        let calculatedFib = parseFloat(inlineCustom.fib) || 0;
+        if (vegWeight && vegWeight > 0) {
+          calculatedFib = vegType === 'raw' ? (vegWeight * 0.02) : (vegWeight * 0.04);
+        }
+
         const newItem = {
           id: 'inline_' + Date.now(), name: inlineCustom.name,
           cal: parseFloat(inlineCustom.cal) || 0, pro: parseFloat(inlineCustom.pro) || 0,
-          fib: parseFloat(inlineCustom.fib) || 0, sod: parseFloat(inlineCustom.sod) || 0,
+          fib: calculatedFib, sod: parseFloat(inlineCustom.sod) || 0,
           carb: parseFloat(inlineCustom.carb) || 0, price: parseFloat(inlineCustom.price) || 0, type: 'extra'
         };
         addSide(newItem);
@@ -662,6 +675,7 @@
         setCustomSides(updatedCustomSides);
         localStorage.setItem('custom_sides', JSON.stringify(updatedCustomSides));
         setInlineCustom({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
+        setVegWeight('');
       };
 
       const handleCheckout = (isPerfect) => {
@@ -727,7 +741,31 @@
                     <div><label className="block text-sm font-semibold text-slate-600 mb-1">熱量 (大卡)</label><input type="number" required min="0" className="w-full text-base p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" value={customMeal.cal} onChange={e => setCustomMeal({...customMeal, cal: e.target.value})} /></div>
                     <div><label className="block text-sm font-semibold text-orange-600 mb-1">碳水/糖 (g)</label><input type="number" step="0.1" required min="0" className="w-full text-base p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none" value={customMeal.carb} onChange={e => setCustomMeal({...customMeal, carb: e.target.value})} /></div>
                     <div><label className="block text-sm font-semibold text-blue-600 mb-1">蛋白質 (g)</label><input type="number" step="0.1" required min="0" className="w-full text-base p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none" value={customMeal.pro} onChange={e => setCustomMeal({...customMeal, pro: e.target.value})} /></div>
-                    <div><label className="block text-sm font-semibold text-emerald-600 mb-1">膳食纖維 (g)</label><input type="number" step="0.1" min="0" className="w-full text-base p-3 bg-emerald-50 border border-emerald-200 rounded-xl outline-none" value={customMeal.fib} onChange={e => setCustomMeal({...customMeal, fib: e.target.value})} /></div>
+                    
+                    {/* 蔬菜重量推估模組 */}
+                    <div className="col-span-2 bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                      <label className="block text-sm font-semibold text-emerald-700 mb-2 flex items-center justify-between">
+                        <span className="flex items-center gap-1"><Calculator className="w-4 h-4"/> 纖維量推估工具</span>
+                      </label>
+                      <p className="text-[10px] text-emerald-600 mb-2">無標示纖維時，可輸入蔬菜淨重自動換算</p>
+                      <div className="flex gap-2 mb-2">
+                        <button type="button" onClick={() => setVegType('raw')} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-colors ${vegType === 'raw' ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-emerald-600 border-emerald-200'}`}>生菜沙拉</button>
+                        <button type="button" onClick={() => setVegType('cooked')} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-colors ${vegType === 'cooked' ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-emerald-600 border-emerald-200'}`}>關東煮/熟菜</button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input type="number" min="0" placeholder="輸入淨重(g)" className="w-2/3 text-base p-2 bg-white border border-emerald-200 rounded-lg outline-none text-center" value={vegWeight} onChange={e => {setVegWeight(e.target.value); setCustomMeal({...customMeal, fib: ''})}} />
+                        <span className="text-xs font-bold text-emerald-700">約 {vegWeight ? (vegType === 'raw' ? (vegWeight*0.02).toFixed(1) : (vegWeight*0.04).toFixed(1)) : 0} g 纖維</span>
+                      </div>
+                    </div>
+
+                    <div className="col-span-2 flex items-center mb-1">
+                      <div className="flex-grow border-t border-slate-200"></div>
+                      <span className="flex-shrink-0 mx-4 text-xs text-slate-400">若有標示請直接輸入下方</span>
+                      <div className="flex-grow border-t border-slate-200"></div>
+                    </div>
+
+                    <div><label className="block text-sm font-semibold text-emerald-600 mb-1">手動填寫纖維(g)</label><input type="number" step="0.1" min="0" placeholder="會覆蓋上方推估" className="w-full text-base p-3 bg-emerald-50 border border-emerald-200 rounded-xl outline-none" value={customMeal.fib} onChange={e => {setCustomMeal({...customMeal, fib: e.target.value}); setVegWeight('');}} /></div>
+                    
                     <div className="col-span-2"><label className="block text-sm font-semibold text-red-600 mb-1 flex items-center gap-1">鈉含量 (mg) <Info className="w-3 h-3 ml-1"/></label><input type="number" required min="0" className="w-full text-base p-3 bg-red-50 border border-red-200 rounded-xl outline-none" value={customMeal.sod} onChange={e => setCustomMeal({...customMeal, sod: e.target.value})} /></div>
                     <div className="col-span-2"><label className="block text-sm font-semibold text-slate-600 mb-1">價格 (元)</label><input type="number" min="0" className="w-full text-base p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" value={customMeal.price} onChange={e => setCustomMeal({...customMeal, price: e.target.value})} /></div>
                   </div>
@@ -814,7 +852,9 @@
           <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 pb-24">
             <div className="w-full max-w-md">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-4 relative overflow-hidden">
-                <button onClick={onResetProfile} className="absolute top-5 right-5 text-slate-400 hover:text-emerald-600 transition-colors p-2 bg-slate-50 rounded-full" title="重新設定個人資料"><Settings className="w-5 h-5" /></button>
+                <button onClick={onResetProfile} className="w-full mb-4 bg-slate-100 border border-slate-200 text-slate-600 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-200 active:bg-slate-300 font-bold text-sm transition-colors">
+                  <Settings className="w-4 h-4" /> 重新設定個人資料與營養目標
+                </button>
                 <h1 className="text-xl font-bold mb-1">您想吃什麼主餐？</h1>
                 <p className="text-sm text-slate-500">系統載入專屬目標：單餐 {userQuota.kcal}kcal</p>
                 
@@ -1024,7 +1064,21 @@
                     <input type="number" placeholder="熱量(kcal)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.cal} onChange={e => setInlineCustom({...inlineCustom, cal: e.target.value})} />
                     <input type="number" placeholder="碳水(g)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.carb} onChange={e => setInlineCustom({...inlineCustom, carb: e.target.value})} />
                     <input type="number" placeholder="蛋白質(g)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.pro} onChange={e => setInlineCustom({...inlineCustom, pro: e.target.value})} />
-                    <input type="number" placeholder="纖維(g)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.fib} onChange={e => setInlineCustom({...inlineCustom, fib: e.target.value})} />
+                    
+                    {/* 行內蔬菜推估小工具 */}
+                    <div className="col-span-3 bg-white p-2 rounded-xl border border-purple-200 flex items-center gap-2 mt-1">
+                      <Calculator className="w-4 h-4 text-purple-400 flex-shrink-0"/>
+                      <select className="text-xs bg-purple-50 text-purple-700 border-none outline-none rounded p-1" value={vegType} onChange={(e) => setVegType(e.target.value)}>
+                        <option value="raw">生菜沙拉</option>
+                        <option value="cooked">關東煮/熟菜</option>
+                      </select>
+                      <input type="number" min="0" placeholder="淨重(g)" className="w-20 text-xs p-1.5 bg-slate-50 border border-slate-200 rounded outline-none text-center" value={vegWeight} onChange={e => {setVegWeight(e.target.value); setInlineCustom({...inlineCustom, fib: ''})}} />
+                      <span className="text-[10px] font-bold text-purple-600 whitespace-nowrap">
+                        = {vegWeight ? (vegType === 'raw' ? (vegWeight*0.02).toFixed(1) : (vegWeight*0.04).toFixed(1)) : 0}g 纖維
+                      </span>
+                    </div>
+
+                    <input type="number" placeholder="手填纖維(g)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.fib} onChange={e => {setInlineCustom({...inlineCustom, fib: e.target.value}); setVegWeight('');}} />
                     <input type="number" placeholder="鈉(mg)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.sod} onChange={e => setInlineCustom({...inlineCustom, sod: e.target.value})} />
                     <input type="number" placeholder="價格($)" className="w-full text-base p-2.5 bg-white border border-purple-200 rounded-xl outline-none text-center placeholder:text-xs" value={inlineCustom.price} onChange={e => setInlineCustom({...inlineCustom, price: e.target.value})} />
                   </div>
