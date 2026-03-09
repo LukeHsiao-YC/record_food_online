@@ -56,7 +56,7 @@
     const { useState, useEffect, useRef } = React;
 
     // ==========================================
-    // 1. API 網址設定 (已為您填入專屬 GAS 網址)
+    // 1. API 網址設定
     // ==========================================
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzAN311kTYImaJlad5w_CH6U8IGzJ1nknCDj6uuZvToczWlcCOhBmGEQNkdfabq2exi/exec"; 
 
@@ -106,6 +106,8 @@
     const RefreshCw = (props) => <Icon name="refresh-cw" {...props} />;
     const Zap = (props) => <Icon name="zap" {...props} />;
     const Calculator = (props) => <Icon name="calculator" {...props} />;
+    const BookOpen = (props) => <Icon name="book-open" {...props} />;
+    const Lightbulb = (props) => <Icon name="lightbulb" {...props} />;
 
     const FacebookLogo = (props) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -149,9 +151,164 @@
     };
 
     // ==========================================
-    // 3. 引導設定元件 (OnboardingScreen)
+    // 3. 獨立知識庫元件 (Knowledge Base Room)
     // ==========================================
-    const OnboardingScreen = ({ onComplete }) => {
+    const KnowledgeBase = ({ onClose }) => {
+      return (
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 animate-in slide-in-from-bottom-8">
+          {/* Header */}
+          <div className="bg-emerald-600 p-4 sticky top-0 z-20 flex items-center justify-between text-white shadow-md">
+            <button onClick={onClose} className="p-2 hover:bg-emerald-700 rounded-full transition-colors">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <h1 className="font-bold text-lg tracking-wide">外食與 211 餐盤全攻略</h1>
+            <div className="w-10"></div> {/* Spacer for centering */}
+          </div>
+
+          <div className="p-4 space-y-6 max-w-md mx-auto mt-2">
+            
+            {/* Section 1: 營養素計算大解密 */}
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
+                  <Calculator className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-slate-800">營養素計算大解密</h2>
+              </div>
+              <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+                本系統不只是單純的熱量加總，而是內建了專業的臨床營養演算法，針對不同年齡與目標為您客製化：
+              </p>
+              <ul className="space-y-3 text-sm text-slate-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 font-bold mt-0.5">•</span>
+                  <div><b>熱量 (TDEE)：</b>成人採用 Mifflin-St Jeor 公式，兒童/青少年採用臨床兒科常用的 Schofield 方程式，並依據您的減重目標換算出每日安全赤字。</div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-orange-500 font-bold mt-0.5">•</span>
+                  <div><b>碳水化合物：</b>一般成人嚴格控制在單餐總熱量的 40%。但若是 18 歲以下發育期孩童，大腦與身體需要更多能量，系統會自動放寬至 50% 確保生長無虞。</div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-400 font-bold mt-0.5">•</span>
+                  <div><b>蛋白質：</b>成人為「體重 × 1.2g」，發育期孩童則拉高至「體重 × 1.5g」作為保護機制。</div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                  <div><b>膳食纖維：</b>成人單餐低標為 6g。兒童則採用國際兒科黃金準則「年齡 + 5」公式來精準計算每日所需。</div>
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 2: 211 餐盤概念 */}
+            <div className="bg-emerald-50 p-6 rounded-3xl shadow-sm border border-emerald-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="bg-emerald-200 p-2 rounded-xl text-emerald-700">
+                  <PieChart className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-emerald-800">211 餐盤與進食順序</h2>
+              </div>
+              <p className="text-sm text-emerald-700 mb-4 leading-relaxed font-medium">
+                不需繁瑣計算熱量，掌握「比例」與「順序」才是控制荷爾蒙不發胖的關鍵。
+              </p>
+              
+              <div className="bg-white rounded-2xl p-4 border border-emerald-200 mb-4">
+                <h3 className="font-bold text-emerald-800 mb-2 text-center text-base">🍽️ 完美餐盤比例</h3>
+                <div className="flex justify-between items-center text-center text-sm font-bold mt-3">
+                  <div className="flex-1"><div className="text-2xl mb-1">🥦</div>2份 蔬菜</div>
+                  <div className="text-emerald-300">|</div>
+                  <div className="flex-1"><div className="text-2xl mb-1">🥩</div>1份 蛋白質</div>
+                  <div className="text-emerald-300">|</div>
+                  <div className="flex-1"><div className="text-2xl mb-1">🍠</div>1份 澱粉</div>
+                </div>
+                
+                {/* 新增：手掌估算法 */}
+                <div className="mt-4 pt-4 border-t border-emerald-100 text-xs text-slate-600 leading-relaxed">
+                  <p className="font-bold text-emerald-700 mb-2 flex items-center gap-1">
+                    <Lightbulb className="w-4 h-4"/> 怎麼抓「1 份」的量？(手掌估算法)
+                  </p>
+                  <ul className="space-y-1.5 ml-1">
+                    <li>🥦 <b>蔬菜 (2份)：</b>大約是您<span className="text-emerald-600 font-bold">「雙手拼攏的兩個拳頭」</span>大小(煮熟後)。</li>
+                    <li>🥩 <b>蛋白質 (1份)：</b>大約是您<span className="text-emerald-600 font-bold">「一整個手掌心」</span>的大小與厚度。</li>
+                    <li>🍠 <b>澱粉 (1份)：</b>大約是您<span className="text-emerald-600 font-bold">「一個單手拳頭」</span>大小，盡量挑選原型澱粉。</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 border border-emerald-200">
+                <h3 className="font-bold text-emerald-800 mb-2 text-center text-base">⏱️ 擊退肥胖的進食順序</h3>
+                <div className="flex flex-wrap justify-center gap-2 mt-3 font-bold text-sm text-slate-700">
+                  <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg">1. 水</span>➔
+                  <span className="bg-red-50 text-red-600 px-3 py-1 rounded-lg">2. 肉</span>➔
+                  <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg">3. 菜</span>➔
+                  <span className="bg-orange-50 text-orange-600 px-3 py-1 rounded-lg">4. 飯</span>➔
+                  <span className="bg-pink-50 text-pink-600 px-3 py-1 rounded-lg">5. 果</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-3 leading-relaxed">
+                  * 先喝水可提高代謝；先吃肉(蛋白質)能增加飽足感並減緩血糖上升；最後再吃飯，此時血糖最平穩，且不容易過量。
+                </p>
+              </div>
+            </div>
+
+            {/* Section 3: 紅綠燈選擇原則 */}
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="bg-slate-100 p-2 rounded-xl text-slate-600">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-slate-800">外食紅綠燈原則</h2>
+              </div>
+              <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+                外食地雷多？跟著燈號選，避開隱藏的肥胖陷阱：
+              </p>
+
+              <div className="space-y-3">
+                <div className="p-3 border-l-4 border-emerald-500 bg-emerald-50 rounded-r-xl">
+                  <div className="font-bold text-emerald-700 mb-1 flex items-center gap-1">🟢 綠燈區 (可天天吃)</div>
+                  <div className="text-xs text-slate-600"><b>烹調：</b>清蒸、水煮、乾煎、舒肥、清炒。<br/><b>食材：</b>高纖蔬菜、原型食物 (如：地瓜、魚排、茶葉蛋)。</div>
+                </div>
+                <div className="p-3 border-l-4 border-yellow-500 bg-yellow-50 rounded-r-xl">
+                  <div className="font-bold text-yellow-700 mb-1 flex items-center gap-1">🟡 黃燈區 (適量食用)</div>
+                  <div className="text-xs text-slate-600"><b>烹調：</b>一般滷製、普通熱炒 (有含少許糖/醬)。<br/><b>食材：</b>加工澱粉 (如：白米飯、全麥麵包、麵條)。</div>
+                </div>
+                <div className="p-3 border-l-4 border-red-500 bg-red-50 rounded-r-xl">
+                  <div className="font-bold text-red-700 mb-1 flex items-center gap-1">🔴 紅燈區 (盡量少吃)</div>
+                  <div className="text-xs text-slate-600"><b>烹調：</b>油炸、三杯、糖醋、勾芡、麻婆等重油糖鹽。<br/><b>食材：</b>精製澱粉/加工肉 (蘿蔔糕、香腸、火腿、蔥油餅)。</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 4: 系統使用指南 */}
+            <div className="bg-purple-50 p-6 rounded-3xl shadow-sm border border-purple-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="bg-purple-200 p-2 rounded-xl text-purple-700">
+                  <Lightbulb className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-purple-800">如何使用本系統？</h2>
+              </div>
+              <ul className="space-y-4 text-sm text-purple-900/80 leading-relaxed">
+                <li className="flex items-start gap-3">
+                  <div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">1</div>
+                  <div><b>選主食看燈號：</b>首頁挑選商品後，系統會立刻結算您的碳水與熱量，給出對應的紅綠燈警告與醫師短評。</div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">2</div>
+                  <div><b>看進度條補缺口：</b>看診斷頁面的「211 進度條」，缺蛋白質就點藍色區塊加點，缺蔬菜就點綠色區塊加點。</div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">3</div>
+                  <div><b>化身口袋營養師：</b>遇到系統沒有的商品？善用「自行輸入」，系統內建的 AI 大腦會即時診斷並為您換算蔬菜纖維量！</div>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      );
+    };
+
+    // ==========================================
+    // 4. 引導設定元件 (OnboardingScreen)
+    // ==========================================
+    const OnboardingScreen = ({ onComplete, onOpenKnowledge }) => {
       const [step, setStep] = useState(1);
       const [profile, setProfile] = useState(() => {
         const saved = localStorage.getItem('health_select_profile');
@@ -216,8 +373,21 @@
       ];
 
       return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800 pb-10">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 mb-6 mt-4">
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 pb-10">
+          
+          {/* 知識庫入口按鈕 */}
+          <div className="w-full max-w-md mt-4 mb-2">
+            <button 
+              onClick={onOpenKnowledge}
+              className="w-full bg-emerald-100/50 border border-emerald-200 text-emerald-800 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-100 active:scale-[0.98] transition-all font-bold text-sm shadow-sm"
+            >
+              <BookOpen className="w-5 h-5 text-emerald-600" /> 
+              減重前必看：外食與 211 餐盤全攻略
+              <ChevronRight className="w-4 h-4 opacity-50 ml-1" />
+            </button>
+          </div>
+
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 mb-6">
             <div className="bg-emerald-600 p-6 text-white">
               <h1 className="text-2xl font-bold flex items-center gap-2"><User className="w-6 h-6 mr-1" /> 健康選食助手設定</h1>
               <p className="text-emerald-50 opacity-90 text-sm mt-1">為您精準規劃專屬超商營養配額</p>
@@ -386,14 +556,14 @@
     };
 
     // ==========================================
-    // 4. 系統主程式元件 (MainApp - 雲端版)
+    // 5. 系統主程式元件 (MainApp - 雲端版)
     // ==========================================
     const MainApp = ({ onResetProfile }) => {
       const [userQuota, setUserQuota] = useState({ kcal: 600, sod: 800 }); 
       const [macroTargets, setMacroTargets] = useState({ carbMax: 65, proMin: 20, proMax: 45, fibMin: 6 });
       const [searchTerm, setSearchTerm] = useState('');
       
-      // 內建的預設備用資料庫 (當雲端尚未建立或失敗時的 fallback)
+      // 內建的預設備用資料庫
       const DEFAULT_SIDES = [
         { id: 'ds1', name: '茶葉蛋', cal: 75, pro: 7, fib: 0, sod: 250, carb: 5, price: 13, type: 'protein' },
         { id: 'ds2', name: '統一無糖高纖豆漿', cal: 162, pro: 13.6, fib: 8, sod: 88, carb: 14, price: 20, type: 'protein' },
@@ -414,9 +584,8 @@
         { id: 'de5', name: '統一無糖綠茶', cal: 0, pro: 0, fib: 0, sod: 10, carb: 0, price: 20, type: 'extra' },
       ];
 
-      // 雲端資料狀態
       const [mainMeals, setMainMeals] = useState([]);
-      const [sideOptions, setSideOptions] = useState(DEFAULT_SIDES); // 預設載入內建清單
+      const [sideOptions, setSideOptions] = useState(DEFAULT_SIDES); 
       const [isLoadingData, setIsLoadingData] = useState(true);
       const [dataError, setDataError] = useState(null);
 
@@ -435,11 +604,9 @@
       const [customMeal, setCustomMeal] = useState({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
       const [inlineCustom, setInlineCustom] = useState({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
       
-      // 蔬菜重量換算狀態
       const [vegWeight, setVegWeight] = useState('');
-      const [vegType, setVegType] = useState('raw'); // 'raw'生菜 或 'cooked'熟菜
+      const [vegType, setVegType] = useState('raw'); 
 
-      // 從 Google Apps Script 抓取資料
       const fetchFoodData = async () => {
         if (!GAS_API_URL || GAS_API_URL.includes('YOUR_GAS_WEB_APP_URL_HERE')) {
           setDataError("尚未設定 Google API 網址。請在程式碼中填入您的 GAS URL。");
@@ -454,30 +621,25 @@
           if (!response.ok) throw new Error('網路回應錯誤');
           const data = await response.json();
           
-          // 自動補全 Google 試算表未填寫的 expert 短評
           const processedData = data.map(item => ({
             ...item,
             expert: item.expert ? item.expert : `💡 系統智能分析：${generateSmartComment(parseFloat(item.carb)||0, parseFloat(item.pro)||0, parseFloat(item.sod)||0, item.type === 'main')}`
           }));
           
-          // 根據 type 欄位分類資料
           const mains = processedData.filter(item => item.type === 'main');
           let sides = processedData.filter(item => item.type === 'protein' || item.type === 'fiber' || item.type === 'extra');
           
           setMainMeals(mains);
 
-          // 如果雲端尚未設定任何配菜，則保留內建的 15 款商品
           if(sides.length > 0) {
             setSideOptions(sides);
           }
           
-          // 將最新資料存入 localStorage 作為快取
           localStorage.setItem('cached_main_meals', JSON.stringify(mains));
           if(sides.length > 0) localStorage.setItem('cached_side_options', JSON.stringify(sides));
           
         } catch (err) {
           console.error('Fetch error:', err);
-          // 如果抓取失敗，嘗試載入快取
           const cachedMains = localStorage.getItem('cached_main_meals');
           const cachedSides = localStorage.getItem('cached_side_options');
           
@@ -493,9 +655,7 @@
         }
       };
 
-      // 初始化：計算個人目標 & 抓取資料
       useEffect(() => {
-        // 1. 設定個人目標
         const savedProfile = localStorage.getItem('health_select_profile');
         if (savedProfile) {
           const profile = JSON.parse(savedProfile);
@@ -547,7 +707,6 @@
           setMacroTargets({ carbMax: carbMaxCalc, proMin: proMinCalc, proMax: proMaxCalc, fibMin: fibMinCalc });
         }
 
-        // 2. 載入歷史紀錄等本機資料
         const savedCustoms = localStorage.getItem('custom_meals');
         if (savedCustoms) setCustomMeals(JSON.parse(savedCustoms));
         const savedCustomSides = localStorage.getItem('custom_sides');
@@ -557,7 +716,6 @@
         const savedHistory = localStorage.getItem('meal_history');
         if (savedHistory) setHistory(JSON.parse(savedHistory));
 
-        // 3. 呼叫雲端 API
         fetchFoodData();
 
       }, []);
@@ -711,7 +869,6 @@
         );
       };
 
-      // Loading 畫面
       if (isLoadingData) {
         return (
           <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800">
@@ -838,7 +995,6 @@
       }
 
       if (!selectedMain) {
-        // 使用從 API 抓回來的 mainMeals 取代寫死的 MAIN_MEALS
         const allMeals = [...mainMeals, ...customMeals];
         const groupedMains = allMeals.reduce((acc, meal) => {
           if (!searchTerm || meal.name.includes(searchTerm)) {
@@ -1119,6 +1275,7 @@
     const App = () => {
       const [hasOnboarded, setHasOnboarded] = useState(true); 
       const [isLoading, setIsLoading] = useState(true);
+      const [showKnowledge, setShowKnowledge] = useState(false); // 新增：知識庫狀態
 
       useEffect(() => {
         const saved = localStorage.getItem('health_select_profile');
@@ -1128,7 +1285,14 @@
 
       if (isLoading) return <div className="min-h-screen flex items-center justify-center bg-slate-50">載入中...</div>;
 
-      return hasOnboarded ? <MainApp onResetProfile={() => setHasOnboarded(false)} /> : <OnboardingScreen onComplete={() => setHasOnboarded(true)} />;
+      // 如果點擊了知識庫按鈕，則全螢幕顯示知識庫
+      if (showKnowledge) {
+        return <KnowledgeBase onClose={() => setShowKnowledge(false)} />;
+      }
+
+      return hasOnboarded ? 
+        <MainApp onResetProfile={() => setHasOnboarded(false)} /> : 
+        <OnboardingScreen onComplete={() => setHasOnboarded(true)} onOpenKnowledge={() => setShowKnowledge(true)} />;
     };
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
