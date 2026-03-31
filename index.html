@@ -112,6 +112,7 @@
     const BookOpen = (props) => <Icon name="book-open" {...props} />;
     const Lightbulb = (props) => <Icon name="lightbulb" {...props} />;
     const Sunrise = (props) => <Icon name="sunrise" {...props} />;
+    const ExternalLink = (props) => <Icon name="external-link" {...props} />;
 
     const FacebookLogo = (props) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -137,7 +138,7 @@
       );
     }
 
-    // 智能短評生成器 (SOP 規則)
+    // 智能短評生成器
     const generateSmartComment = (carb, pro, sod, isMain) => {
       let comments = [];
       if (carb > 100) comments.push("白飯務必剩一半，否則易引起餐後嗜睡與脂肪囤積。");
@@ -302,7 +303,7 @@
               <ul className="space-y-4 text-sm text-purple-900/80 leading-relaxed">
                 <li className="flex items-start gap-3"><div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</div><div><b>選主食看燈號：</b>系統會根據您的目標，即時給出醫師評語。</div></li>
                 <li className="flex items-start gap-3"><div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</div><div><b>看進度條補缺口：</b>利用加點按鈕補足蛋白質或蔬菜。</div></li>
-                <li className="flex items-start gap-3"><div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</div><div><b>自行輸入：</b>外食遇到沒有的品項，輸入數據系統會自動幫您診斷。</div></li>
+                <li className="flex items-start gap-3"><div className="bg-purple-200 text-purple-700 font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</div><div><b>自行輸入：</b>外食遇到沒有的品項，自己輸入數據系統會自動幫您診斷。</div></li>
               </ul>
             </div>
 
@@ -373,11 +374,15 @@
 
       return (
         <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800 pb-10">
-          <div className="w-full max-w-md mt-4 mb-2">
+          <div className="w-full max-w-md mt-4 mb-2 space-y-3">
             <button onClick={onOpenKnowledge} className="w-full bg-emerald-100/50 border border-emerald-200 text-emerald-800 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-100 active:scale-[0.98] transition-all font-bold text-sm shadow-sm">
               <BookOpen className="w-5 h-5 text-emerald-600" /> 減重前必看：外食與 211 餐盤全攻略 <ChevronRight className="w-4 h-4 opacity-50 ml-1" />
             </button>
+            <a href="https://smilecloud.tw/diet/" target="_blank" rel="noreferrer" className="w-full bg-blue-50 border border-blue-200 text-blue-700 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-100 active:scale-[0.98] transition-all font-bold text-sm shadow-sm no-underline">
+              <Search className="w-5 h-5 text-blue-600" /> 兒童及青少年飲食營養建議查詢系統 <ExternalLink className="w-4 h-4 opacity-50 ml-1" />
+            </a>
           </div>
+
           <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 mb-6">
             <div className="bg-emerald-600 p-6 text-white">
               <h1 className="text-2xl font-bold flex items-center gap-2"><User className="w-6 h-6 mr-1" /> 健康選食助手設定</h1>
@@ -422,20 +427,9 @@
               {step === 3 && (
                 <div className="space-y-6 text-center">
                   <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100">
-                    <p className="text-emerald-700 text-sm font-semibold uppercase tracking-wider mb-2">專屬單餐配額</p>
-                    <div className="flex justify-around items-end">
-                      <div>
-                        <span className="text-xs text-slate-500 block">您的 TDEE</span>
-                        <span className="text-xl font-bold text-slate-600">{tdee}</span><span className="text-xs text-slate-400"> kcal</span>
-                      </div>
-                      <div className="pb-2"><ChevronRight className="w-5 h-5 text-emerald-300" /></div>
-                      <div>
-                        <span className="text-xs text-emerald-600 block font-bold">每餐建議攝取</span>
-                        <span className="text-3xl font-black text-emerald-700">{Math.round(targetKcal / 3)}</span><span className="text-xs text-emerald-600"> kcal</span>
-                      </div>
-                    </div>
+                    <p className="text-emerald-700 text-sm font-semibold mb-2">專屬單餐配額</p>
+                    <span className="text-3xl font-black text-emerald-700">{Math.round(targetKcal / 3)}</span><span className="text-xs text-emerald-600"> kcal</span>
                   </div>
-
                   <div className="space-y-3 text-left">
                     <h3 className="text-sm font-bold flex items-center gap-2 px-1"><Target className="w-4 h-4 text-emerald-600"/> 健康管理目標</h3>
                     <div className="flex gap-2">
@@ -443,19 +437,6 @@
                         <button key={g.val} onClick={() => setProfile({...profile, goal: g.val})} className={`flex-1 py-3 rounded-xl border text-sm font-bold transition-all ${profile.goal === g.val ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>{g.label}</button>
                       ))}
                     </div>
-                    
-                    <div className="bg-slate-50 p-3 rounded-xl mt-3 text-[13px] text-slate-600 font-medium">
-                      {profile.goal === '0' && <span className="flex items-start gap-1.5"><Info className="w-4 h-4 flex-shrink-0 text-slate-400 mt-0.5"/> 選擇維持現況，系統將不刻意製造熱量赤字，旨在維持現有體重與體態。</span>}
-                      {profile.goal === '0.3' && <span className="flex items-start gap-1.5"><Info className="w-4 h-4 flex-shrink-0 text-blue-500 mt-0.5"/> 預估每週約減少 <b className="text-blue-600">0.3</b> 公斤。<br/>(每日需創造約 330 大卡的熱量赤字)</span>}
-                      {profile.goal === '0.5' && <span className="flex items-start gap-1.5"><Info className="w-4 h-4 flex-shrink-0 text-orange-500 mt-0.5"/> 預估每週約減少 <b className="text-orange-600">0.5</b> 公斤。<br/>(每日需創造約 550 大卡的熱量赤字)</span>}
-                    </div>
-
-                    {parseInt(profile.age) < 18 && (
-                      <p className="text-[10px] text-red-500 px-2 flex items-start gap-1 mt-2">
-                        <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                        兒童與青少年建議以「維持體重」搭配運動為主，避免極端節食影響發育。
-                      </p>
-                    )}
                   </div>
                 </div>
               )}
@@ -519,13 +500,11 @@
         { id: 'ds3', name: '舒迷雞胸肉', cal: 136, pro: 24.5, fib: 0, sod: 679, carb: 1, price: 59, type: 'protein' },
         { id: 'ds4', name: '統一AB無糖優酪乳', cal: 119, pro: 6.4, fib: 0, sod: 107, carb: 17.3, price: 28, type: 'protein' },
         { id: 'ds5', name: '石安牧場溫泉蛋', cal: 53, pro: 5.4, fib: 0, sod: 204, carb: 1.4, price: 46, type: 'protein' },
-        
         { id: 'df1', name: '一日野菜-和風海藻', cal: 37, pro: 1.4, fib: 2.6, sod: 101, carb: 6, price: 49, type: 'fiber' },
         { id: 'df2', name: '一日野菜-活力彩蔬', cal: 98, pro: 8.6, fib: 3.5, sod: 86, carb: 14.4, price: 55, type: 'fiber' },
         { id: 'df3', name: '關東煮-白蘿蔔兩塊', cal: 16, pro: 0, fib: 1.0, sod: 120, carb: 0, price: 20, type: 'fiber' },
         { id: 'df4', name: '微波-鹽味毛豆', cal: 97, pro: 7.9, fib: 0, sod: 315, carb: 7.5, price: 39, type: 'fiber' }, 
         { id: 'df5', name: '微波-青花菜', cal: 30, pro: 2, fib: 3, sod: 100, carb: 4, price: 39, type: 'fiber' },
-        
         { id: 'de1', name: '上等蕉 (1根)', cal: 90, pro: 1.5, fib: 2.0, sod: 0, carb: 23, price: 20, type: 'extra' },
         { id: 'de2', name: 'CityCafe 無糖拿鐵(中)', cal: 150, pro: 8, fib: 0, sod: 100, carb: 10, price: 45, type: 'extra' },
         { id: 'de3', name: '切片蘋果', cal: 55, pro: 0.2, fib: 1.8, sod: 2, carb: 14.5, price: 39, type: 'extra' },
@@ -537,24 +516,20 @@
       const [sideOptions, setSideOptions] = useState(DEFAULT_SIDES); 
       const [isLoadingData, setIsLoadingData] = useState(true);
       const [dataError, setDataError] = useState(null);
-
       const [selectedMain, setSelectedMain] = useState(null);
       const [mainPortion, setMainPortion] = useState(1);
       const [addedSides, setAddedSides] = useState([]);
-      
       const [customMeals, setCustomMeals] = useState([]);
       const [customSides, setCustomSides] = useState([]);
       const [recentMeals, setRecentMeals] = useState([]);
       const [expandedCategories, setExpandedCategories] = useState({});
       const [history, setHistory] = useState([]);
       const [showHistory, setShowHistory] = useState(false);
-      
       const [customInputMode, setCustomInputMode] = useState(null); 
       const [customMeal, setCustomMeal] = useState({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
       const [inlineCustom, setInlineCustom] = useState({ name: '', cal: '', pro: '', fib: '', sod: '', carb: '', price: '' });
-      
       const [vegWeight, setVegWeight] = useState('');
-      const [vegType, setVegType] = useState('raw'); 
+      const [vegType, setVegType] = useState('raw');
 
       const fetchFoodData = async () => {
         setIsLoadingData(true);
@@ -566,19 +541,17 @@
           
           const processedData = data.map(item => ({
             ...item,
-            expert: item.expert ? item.expert : `💡 系統智能分析：${generateSmartComment(parseFloat(item.carb)||0, parseFloat(item.pro)||0, parseFloat(item.sod)||0, item.type === 'main')}`
+            expert: item.expert ? item.expert : `💡 系統分析：${generateSmartComment(parseFloat(item.carb)||0, parseFloat(item.pro)||0, parseFloat(item.sod)||0, item.type === 'main')}`
           }));
           
           const mains = processedData.filter(item => item.type === 'main');
-          const sides = processedData.filter(item => ['protein','fiber','extra'].includes(item.type));
+          let sides = processedData.filter(item => ['protein','fiber','extra'].includes(item.type));
           
           setMainMeals(mains);
-
-          // 將內建選項與雲端新選項合併
-          setSideOptions([...DEFAULT_SIDES, ...sides]);
+          if(sides.length > 0) setSideOptions(sides);
           
           localStorage.setItem('cached_main_meals', JSON.stringify(mains));
-          localStorage.setItem('cached_side_options', JSON.stringify([...DEFAULT_SIDES, ...sides]));
+          if(sides.length > 0) localStorage.setItem('cached_side_options', JSON.stringify(sides));
           
         } catch (err) {
           console.error('Fetch error:', err);
@@ -600,85 +573,56 @@
       useEffect(() => {
         const savedProfile = localStorage.getItem('health_select_profile');
         if (savedProfile) {
-          const profile = JSON.parse(savedProfile);
-          const weight = parseFloat(profile.weight);
-          const age = parseInt(profile.age);
+          const p = JSON.parse(savedProfile);
+          const weight = parseFloat(p.weight), age = parseInt(p.age);
+          let bmr = (age >= 19) ? (10*weight + 6.25*p.height - 5*age + (p.gender==='male'?5:-161)) : (p.gender==='male'? (age<10?22.7*weight+495 : 17.5*weight+651) : (age<10?22.5*weight+499 : 12.2*weight+746));
+          const tdee = bmr * parseFloat(p.activity);
+          const mealKcal = Math.round((tdee - (parseFloat(p.goal)*7700)/7)/3);
+          setUserQuota({ kcal: mealKcal, sod: 800 });
           
-          let bmr = (10 * weight) + (6.25 * profile.height) - (5 * age) + (profile.gender === 'male' ? 5 : -161);
-          if (age < 19) bmr = (17.5 * weight) + 651; 
-          
-          const tdee = bmr * parseFloat(profile.activity);
-          const targetKcal = tdee - ((parseFloat(profile.goal) * 7700) / 7);
-          const mealKcal = Math.round(targetKcal / 3);
-          
-          setUserQuota({ kcal: mealKcal, sod: 800 }); 
-
-          let carbMaxCalc, proMinCalc, proMaxCalc, fibMinCalc;
-          const dietType = profile.dietType || 'standard';
+          let cMax, pMin;
+          const dietType = p.dietType || 'standard';
 
           if (dietType === 'standard') {
-            if (age < 18) {
-              carbMaxCalc = Math.round((mealKcal * 0.5) / 4); 
-              proMinCalc = Math.round((weight * 1.5) / 3); 
-              proMaxCalc = Math.round((weight * 2.5) / 3); 
-              fibMinCalc = Math.max(3, Math.round((age + 5) / 3)); 
-            } else {
-              carbMaxCalc = Math.round((mealKcal * 0.4) / 4); 
-              proMinCalc = Math.max(15, Math.round((weight * 1.2) / 3)); 
-              proMaxCalc = Math.max(40, Math.round((weight * 2.0) / 3)); 
-              fibMinCalc = 6;
-            }
+            cMax = (age < 18) ? Math.round((mealKcal*0.5)/4) : Math.round((mealKcal*0.4)/4);
+            pMin = (age < 18) ? Math.round((weight*1.5)/3) : Math.max(15, Math.round((weight*1.2)/3));
           } else {
-            let carbPercent, proPercent, vegPercent;
-            if (dietType === 'vegetarian') {
-              carbPercent = 0.25; proPercent = 0.25; vegPercent = 0.50;
-            } else if (dietType === 'fat_loss') {
-              carbPercent = 0.20; proPercent = 0.30; vegPercent = 0.50;
-            } else if (dietType === 'custom') {
-              carbPercent = (parseFloat(profile.customMacros?.carb) || 25) / 100;
-              proPercent = (parseFloat(profile.customMacros?.pro) || 25) / 100;
-              vegPercent = (parseFloat(profile.customMacros?.veg) || 50) / 100;
+            let carbPercent, proPercent;
+            if (dietType === 'vegetarian') { carbPercent = 0.25; proPercent = 0.25; }
+            else if (dietType === 'fat_loss') { carbPercent = 0.20; proPercent = 0.30; }
+            else if (dietType === 'custom') {
+              carbPercent = (parseFloat(p.customMacros?.carb) || 25) / 100;
+              proPercent = (parseFloat(p.customMacros?.pro) || 25) / 100;
             }
-            
-            carbMaxCalc = Math.round((mealKcal * carbPercent) / 4);
-            proMinCalc = Math.round((mealKcal * proPercent) / 4);
-            proMaxCalc = proMinCalc + 15; 
-            fibMinCalc = age < 18 ? Math.max(3, Math.round((age + 5) / 3)) : 6;
+            cMax = Math.round((mealKcal * carbPercent) / 4);
+            pMin = Math.round((mealKcal * proPercent) / 4);
           }
-
-          setMacroTargets({ carbMax: carbMaxCalc, proMin: proMinCalc, proMax: proMaxCalc, fibMin: fibMinCalc });
+          
+          setMacroTargets({ carbMax: cMax, proMin: pMin, proMax: pMin + 15, fibMin: age < 18 ? Math.max(3, Math.round((age+5)/3)) : 6 });
         }
 
-        const savedCustoms = localStorage.getItem('custom_meals');
-        if (savedCustoms) setCustomMeals(JSON.parse(savedCustoms));
-        const savedCustomSides = localStorage.getItem('custom_sides');
-        if (savedCustomSides) setCustomSides(JSON.parse(savedCustomSides));
-        const savedRecents = localStorage.getItem('recent_meals');
-        if (savedRecents) setRecentMeals(JSON.parse(savedRecents));
-        const savedHistory = localStorage.getItem('meal_history');
-        if (savedHistory) setHistory(JSON.parse(savedHistory));
-
+        setCustomMeals(JSON.parse(localStorage.getItem('custom_meals') || "[]"));
+        setCustomSides(JSON.parse(localStorage.getItem('custom_sides') || "[]"));
+        setRecentMeals(JSON.parse(localStorage.getItem('recent_meals') || "[]"));
+        setHistory(JSON.parse(localStorage.getItem('meal_history') || "[]"));
+        
         fetchFoodData();
-
       }, []);
 
       const adjustedMain = selectedMain ? {
         ...selectedMain,
-        cal: selectedMain.cal * mainPortion,
-        pro: selectedMain.pro * mainPortion,
-        fib: selectedMain.fib * mainPortion,
-        sod: selectedMain.sod * mainPortion,
-        carb: selectedMain.carb * mainPortion,
-        price: selectedMain.price * mainPortion
+        cal: selectedMain.cal * mainPortion, pro: selectedMain.pro * mainPortion,
+        fib: selectedMain.fib * mainPortion, sod: selectedMain.sod * mainPortion,
+        carb: selectedMain.carb * mainPortion, price: selectedMain.price * mainPortion
       } : null;
 
       const totals = {
-        cal: (adjustedMain?.cal || 0) + addedSides.reduce((sum, item) => sum + item.cal, 0),
-        pro: (adjustedMain?.pro || 0) + addedSides.reduce((sum, item) => sum + item.pro, 0),
-        fib: (adjustedMain?.fib || 0) + addedSides.reduce((sum, item) => sum + item.fib, 0),
-        sod: (adjustedMain?.sod || 0) + addedSides.reduce((sum, item) => sum + item.sod, 0),
-        carb: (adjustedMain?.carb || 0) + addedSides.reduce((sum, item) => sum + item.carb, 0),
-        price: (adjustedMain?.price || 0) + addedSides.reduce((sum, item) => sum + item.price, 0),
+        cal: (adjustedMain?.cal || 0) + addedSides.reduce((s, i) => s + i.cal, 0),
+        pro: (adjustedMain?.pro || 0) + addedSides.reduce((s, i) => s + i.pro, 0),
+        fib: (adjustedMain?.fib || 0) + addedSides.reduce((s, i) => s + i.fib, 0),
+        sod: (adjustedMain?.sod || 0) + addedSides.reduce((s, i) => s + i.sod, 0),
+        carb: (adjustedMain?.carb || 0) + addedSides.reduce((s, i) => s + i.carb, 0),
+        price: (adjustedMain?.price || 0) + addedSides.reduce((s, i) => s + i.price, 0),
       };
 
       const groupedSides = addedSides.reduce((acc, side) => {
@@ -695,16 +639,7 @@
       };
 
       const addSide = (side) => setAddedSides([...addedSides, side]);
-      
-      const removeSideById = (id) => {
-        const index = addedSides.map(s => s.id).lastIndexOf(id);
-        if (index !== -1) {
-          const newSides = [...addedSides];
-          newSides.splice(index, 1);
-          setAddedSides(newSides);
-        }
-      };
-
+      const removeSideById = (id) => { const idx = addedSides.map(s => s.id).lastIndexOf(id); if (idx !== -1) { const n = [...addedSides]; n.splice(idx, 1); setAddedSides(n); } };
       const resetSelection = () => { setSelectedMain(null); setMainPortion(1); setAddedSides([]); setSearchTerm(''); setCustomInputMode(null); setShowHistory(false); };
       const toggleCategory = (category) => setExpandedCategories(prev => ({...prev, [category]: !prev[category]}));
 
@@ -841,7 +776,6 @@
                     <div><label className="block text-sm font-semibold text-orange-600 mb-1">碳水/糖 (g)</label><input type="number" step="0.1" required min="0" className="w-full text-base p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none" value={customMeal.carb} onChange={e => setCustomMeal({...customMeal, carb: e.target.value})} /></div>
                     <div><label className="block text-sm font-semibold text-blue-600 mb-1">蛋白質 (g)</label><input type="number" step="0.1" required min="0" className="w-full text-base p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none" value={customMeal.pro} onChange={e => setCustomMeal({...customMeal, pro: e.target.value})} /></div>
                     
-                    {/* 蔬菜重量推估模組 */}
                     <div className="col-span-2 bg-emerald-50 p-3 rounded-xl border border-emerald-100">
                       <label className="block text-sm font-semibold text-emerald-700 mb-2 flex items-center justify-between">
                         <span className="flex items-center gap-1"><Calculator className="w-4 h-4"/> 纖維量推估工具</span>
@@ -970,7 +904,6 @@
                   <Edit className="w-4 h-4" /> 找不到商品？輸入主餐標示
                 </button>
                 
-                {/* 改變：強化空白餐盤按鈕，明確標示為早餐或點心 */}
                 <button onClick={() => handleSelectMain({ id: 'blank_' + Date.now(), name: '☀️ 早餐 / ☕ 點心 (自由組合)', category: '自訂主餐', cal: 0, pro: 0, fib: 0, sod: 0, carb: 0, price: 0, expert: '💡 早餐或點心通常較難買到蔬菜。請先確保「優質蛋白質」足夠，並避開精緻糖分，少掉的蔬菜午晚餐補回來即可！' })} className="w-full mt-3 bg-amber-50 border border-amber-200 text-amber-700 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-amber-100 active:bg-amber-200 font-bold text-sm shadow-sm transition-colors">
                   <Sunrise className="w-4 h-4" /> 早餐 / 點心 / 輕食 (從空白餐盤組合)
                 </button>
